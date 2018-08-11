@@ -1,8 +1,9 @@
 # Todo Fancy Server
 
-List of routes todo fancy:
+List of routes user:
 
 | Route | HTTP | Description |
 |-------|------|-------------|
 | /api/signup | POST | Create new user |
-| /api/todolist/add | POST | Add new todo |
+| /api/signin | POST | Signin user |
+| /api/signin/facebook | POST | Signin user with facebook |
