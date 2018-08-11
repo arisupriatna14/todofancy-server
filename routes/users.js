@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const { signup, signin, signinFacebook } = require('../controllers/user')
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router
+  .post('/signup', signup)
+  .post('/signin', signin)
+  .post('/signin/facebook', signinFacebook)
 
 module.exports = router;

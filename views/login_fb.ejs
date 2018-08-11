@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login</title>
+  <link rel="icon" href="https://octodex.github.com/images/electrocat.png" sizes="16x16" type="image/png">
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+</head>
+
+<body>
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        appId: '1978783685746477',
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: 'v3.1'
+      });
+    };
+
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    const access_token = localStorage.getItem('token')
+    if (access_token) {
+      // window.location = 'http://localhost:8080/home.html'
+      window.location = 'http://localhost:3030/home'
+    }
+
+    function checkLoginState() {
+      FB.getLoginStatus(function (response) {
+
+        console.log(response)
+        if (response.status === 'connected') {
+          axios.post('http://localhost:3030/api/signin/facebook', response.authResponse)
+            .then(result => {
+              // console.log(result.data)
+              localStorage.setItem('token', result.data.token)
+              window.location = 'http://localhost:3030/home'
+              // window.location = 'http://localhost:8080/home.html'
+            })
+            .catch(err => {
+              console.log(err)
+            })
+          console.log('Berhasil login')
+        }
+      });
+    }
+
+  </script>
+  <br>
+  <br>
+  <center>
+    <h1>Socmed Aggregator</h1>
+    <h2>with Github API</h2>
+    <img src="http://pluspng.com/img-png/github-octocat-logo-png--896.png" width="400" alt="">
+    <h2>Login</h2>
+    <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false" onlogin="checkLoginState()"></div>
+  </center>
+</body>
+
+</html>
