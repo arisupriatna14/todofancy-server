@@ -4,7 +4,8 @@ const {
   addTodo, 
   listTodo, 
   updateTodo, 
-  deleteTodo 
+  deleteTodo,
+  listEvent 
 } = require('../controllers/todo')
 
 router
@@ -12,5 +13,5 @@ router
   .get('/mytodolist', listTodo)
   .put('/mytodolist/:todolistId', updateTodo)
   .delete('/mytodolist/:todolistId', deleteTodo)
-
+  .get('/events', listEvent)
 module.exports = router;
