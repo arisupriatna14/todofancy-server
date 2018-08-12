@@ -26,13 +26,15 @@ module.exports = {
   signin: (req, res) => {
     User.findOne({ email: req.body.email })
       .then(dataUser => {
+        console.log('data user login ===>', dataUser)
         if (dataUser) {
           bcrypt
             .compare(req.body.password, dataUser.password)
             .then((isPassword) => {
               if (isPassword) {
                 const token = jwt.sign({
-                  id: dataUser._id
+                  id: dataUser._id,
+                  email: dataUser.email
                 }, process.env.JWT_SECRET_KEY)
                 return res.status(200).json({
                   msg: 'Login success',
@@ -73,8 +75,10 @@ module.exports = {
           .findOne({ email: dataUser.data.email })
           .then(result => {
             if (result) {
+              console.log('user with fb =====>',result)
               const token = jwt.sign({
-                id: result.userID 
+                id: userID,
+                fullname: result.fullname
               }, process.env.JWT_SECRET_KEY)
 
               res.status(200).json({
