@@ -43,8 +43,14 @@ module.exports = {
           }
           console.log("Send email success");
         });
+        const token = jwt.sign({
+          id: resultSignup._id,
+          fullname: resultSignup.fullname,
+          email: resultSignup.email
+        }, process.env.JWT_SECRET_KEY)
         res.status(200).json({
           message: "Register Success",
+          token: token,
           resultSignup
         });
       })
@@ -66,6 +72,7 @@ module.exports = {
                 const token = jwt.sign(
                   {
                     id: dataUser._id,
+                    fullname: dataUser.fullname,
                     email: dataUser.email
                   },
                   process.env.JWT_SECRET_KEY
@@ -110,8 +117,9 @@ module.exports = {
             if (result) {
               const token = jwt.sign(
                 {
-                  id: userID,
-                  fullname: result.fullname
+                  id: result._id,
+                  fullname: result.fullname,
+                  email: result.email
                 },
                 process.env.JWT_SECRET_KEY
               );
@@ -129,7 +137,8 @@ module.exports = {
                 .then(() => {
                   const token = jwt.sign(
                     {
-                      id: userID
+                      id: userID,
+                      email: dataUser.data.email
                     },
                     process.env.JWT_SECRET_KEY
                   );
@@ -157,5 +166,22 @@ module.exports = {
           error: err
         });
       });
+  },
+
+  getUsername: (req, res) => {
+    const { token } = req.body
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
+    const fullname = decoded.fullname
+
+    if (fullname) {
+      res.status(200).json({
+        message: "Get username success",
+        username: fullname
+      })
+    } else {
+      res.status(500).json({
+        errorGetUsername: 'Username not found'
+      })
+    }
   }
 };

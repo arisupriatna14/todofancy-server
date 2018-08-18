@@ -2,19 +2,18 @@ const Todo = require("../models/todo");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
-const HolidayAPI = require("node-holidayapi");
-const hapi = new HolidayAPI(process.env.API_KEY_HOLIDAY);
-const axios = require('axios')
+const axios = require("axios");
 
 module.exports = {
   addTodo: (req, res) => {
     const { token } = req.headers;
-    const { title, due_date, sendEmail } = req.body;
+    const { title, due_date, category, sendEmail } = req.body;
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     Todo.create({
       user: decoded.id,
       title: title,
-      due_date: due_date
+      due_date: due_date,
+      category: category
     })
       .then(todo => {
         if (sendEmail) {
@@ -111,6 +110,7 @@ module.exports = {
     const { token } = req.headers;
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     Todo.find({ user: decoded.id })
+      .sort({ submittedDate: "desc" })
       .populate("user", "fullname")
       .then(todoList => {
         res.status(200).json({
@@ -125,8 +125,26 @@ module.exports = {
       });
   },
 
+  dataTodoUpdate: (req, res) => {
+    const { todolistId } = req.params
+
+    Todo
+      .findOne({ _id: todolistId }) 
+      .then(result => {
+        res.status(200).json({
+          message: "Success",
+          todoList: result
+        })
+      })
+      .catch(err => {
+        res.status(500).json({
+          error: err
+        })
+      })
+  },
+
   updateTodo: (req, res) => {
-    const { title, due_date, status } = req.body;
+    const { title, due_date, status, category } = req.body;
     const { todolistId } = req.params;
     Todo.updateOne(
       {
@@ -136,7 +154,8 @@ module.exports = {
         $set: {
           title: title,
           due_date: due_date,
-          status: status
+          status: status,
+          category: category
         }
       }
     )
@@ -172,7 +191,9 @@ module.exports = {
   listEvent: (req, res) => {
     axios
       .get(
-        `https://www.eventbriteapi.com/v3/events/search?q=Jakarta?&token=${process.env.EVENT_API_KEY}`
+        `https://www.eventbriteapi.com/v3/events/search?q=Jakarta?&token=${
+          process.env.EVENT_API_KEY
+        }`
       )
       .then(result => {
         res
